@@ -7,12 +7,19 @@ using namespace std;
 using float4 = SPH::float4;
 SPH::FluidSystem fs;
 
-float4 max_pos(0.5f, 0.5f, 0.5f);
-float4 min_pos(-0.5f, -0.5f, -0.5f);
-
+SPH::float4 wall_min = { -25, -25, -25 };
+SPH::float4 wall_max = { 25, 25, 25 };
+SPH::float4 fluid_min = { -15, 0, -15 };
+SPH::float4 fluid_max = { 15, 25, 15 };
+SPH::float4 gravity = { 0.0, -9.8f, 0 };
 //param
+const int maxPoints = 10000;
 float m_distance;
 float4 m_angleXY;
+static float dis = 100;
+static int px = -1, py = -1;
+static int mouse_btn = 0;
+
 void setCamera(float dist, float4 angleXY){
 	m_distance = dist;
 	m_angleXY = angleXY;
@@ -29,28 +36,33 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height){
 	glMatrixMode(GL_PROJECTION);// 选择投影矩阵   
 	glLoadIdentity();// 重置投影矩阵   
 	// 设置视口的大小   
-	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+	gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 1000.0f);
 	setCamera(m_distance, m_angleXY);
+	glutPostRedisplay();
 }
 int InitGL(GLvoid){
+	glShadeModel(GL_SMOOTH);// 启用阴影平滑 
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);// 黑色背景 
+	glClearDepth(1.0f);// 设置深度缓存   
+	glEnable(GL_DEPTH_TEST);// 启用深度测试   
+	glDepthFunc(GL_LEQUAL);// 所作深度测试的类型  
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);// 告诉系统对透视进行修正  
 	return true;
 }
 void glDisplay(void){
 	//fr.display();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    // 清空屏幕
-	setCamera(m_distance, m_angleXY);
 	glPushMatrix();
 
-
 	const GLfloat vertex_list[][3] = {
-		min_pos.x, min_pos.y, min_pos.z,
-		min_pos.x, min_pos.y, max_pos.z,
-		min_pos.x, max_pos.y, min_pos.z,
-		min_pos.x, max_pos.y, max_pos.z,
-		max_pos.x, min_pos.y, min_pos.z,
-		max_pos.x, min_pos.y, max_pos.z,
-		max_pos.x, max_pos.y, min_pos.z,
-		max_pos.x, max_pos.y, max_pos.z
+		wall_min.x, wall_min.y, wall_min.z,
+		wall_min.x, wall_min.y, wall_max.z,
+		wall_min.x, wall_max.y, wall_min.z,
+		wall_min.x, wall_max.y, wall_max.z,
+		wall_max.x, wall_min.y, wall_min.z,
+		wall_max.x, wall_min.y, wall_max.z,
+		wall_max.x, wall_max.y, wall_min.z,
+		wall_max.x, wall_max.y, wall_max.z
 	};
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	GLint index_list[][4] = {
@@ -67,7 +79,6 @@ void glDisplay(void){
 		for (int j = 0; j<4; ++j)     // 每个面有四个顶点，循环四次
 			glVertex3fv(vertex_list[index_list[i][j]]);
 	glEnd();
-	glPopMatrix();
 
 	glColor3f(1, 0, 0);
 	glBegin(GL_POINTS);
@@ -76,22 +87,22 @@ void glDisplay(void){
 		glVertex3f(p.position.x, p.position.y, p.position.z);
 	}
 	glEnd();
-
+	glPopMatrix();
 	glutSwapBuffers();
 }
-static float dis = 5;
-static float4 angleXY(0, 0);
-static int px = -1, py = -1;
-static int mouse_btn = 0;
+
 clock_t  start = 0;
+bool flag = true;
 void glIdle(void){
 	clock_t  stop = clock();
 	if (stop - start > CLOCKS_PER_SEC / 40){
 		fs.tick();
-		start = clock();
 		glutPostRedisplay();
-		cout << 1.0*(start - stop) / CLOCKS_PER_SEC << "s; " << endl;
+		start = clock();
+		float cost = 1.0*(start - stop) / CLOCKS_PER_SEC;
+		cout << cost << "s;\t (" << 1.0 / cost << "fps);\t With "<< fs.getPointCounts() <<" particles" << endl;
 	}
+	
 	/*angleXY.x = (angleXY.x + 1);
 	angleXY.y = (angleXY.y + 1);
 	fr.setCamera(dis, angleXY);
@@ -110,8 +121,8 @@ void mouse(int button, int state, int x, int y){
 void motion(int x, int y){
 	switch (mouse_btn){
 	case GLUT_LEFT_BUTTON:
-		angleXY.y = (angleXY.y - 0.1f*(px - x));
-		angleXY.x = (angleXY.x - 0.1f*(py - y));
+		m_angleXY.y = (m_angleXY.y - 0.1f*(px - x));
+		m_angleXY.x = (m_angleXY.x - 0.1f*(py - y));
 		break;
 	case GLUT_RIGHT_BUTTON:
 		dis -= 0.01f*(py - y);
@@ -119,15 +130,12 @@ void motion(int x, int y){
 	default:
 		break;
 	}
-	setCamera(dis, angleXY);
+	setCamera(dis, m_angleXY);
 	glutPostRedisplay();
 	px = x; py = y;
 }
 
 int main(int argc, char *argv[]){
-	fs.init(1000, float4(-0.5f, -0.5f, -0.5f), float4(0.5f, 0.5f, 0.5f), float4(-0.5f, 0.0f, -0.5f), float4(0.5f, 0.0f, 0.5f), float4(0, -9.8f, 0));
-
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowPosition(100, 100);
@@ -139,6 +147,9 @@ int main(int argc, char *argv[]){
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 
+	InitGL();
+	fs.init(maxPoints, wall_min, wall_max, fluid_min, fluid_max, gravity);
+	fs.tick();
 	glutMainLoop();
 	return 0;
 }

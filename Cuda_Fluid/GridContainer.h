@@ -6,7 +6,7 @@
 namespace SPH{
 	class GridContainer{
 	public://method
-		void init(const Box& box, float cell_size, float border);
+		void init(const Box& box, float sim_scale, float cell_size, float border);
 		void insertParticles(PointBuffer&);
 		int findCell(const float4& p);
 		void findCell(const float4& p, float r, std::unordered_set<int>& res);

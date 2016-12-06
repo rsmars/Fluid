@@ -1,21 +1,22 @@
 #include "GridContainer.h"
 
 namespace SPH{
-	void GridContainer::init(const Box& box, float cell_size, float border){
+	void GridContainer::init(const Box& box, float sim_scale, float cell_size, float border){
+		float worldcell_size = cell_size / sim_scale;
 		m_gridMinPos = box.minpos; m_gridMinPos = m_gridMinPos - border;
 		m_gridMaxPos = box.maxpos; m_gridMaxPos = m_gridMaxPos + border;
 		m_gridSize = m_gridMaxPos; m_gridSize = m_gridSize - m_gridMinPos;
-		m_gridRes.x = (int)ceil(m_gridSize.x / cell_size);
-		m_gridRes.y = (int)ceil(m_gridSize.y / cell_size);
-		m_gridRes.z = (int)ceil(m_gridSize.z / cell_size);
-		m_gridSize.x = m_gridRes.x * cell_size;
-		m_gridSize.y = m_gridRes.y * cell_size;
-		m_gridSize.z = m_gridRes.z * cell_size;
+		m_gridRes.x = (int)ceil(m_gridSize.x / worldcell_size);
+		m_gridRes.y = (int)ceil(m_gridSize.y / worldcell_size);
+		m_gridRes.z = (int)ceil(m_gridSize.z / worldcell_size);
+		m_gridSize.x = m_gridRes.x * worldcell_size;
+		m_gridSize.y = m_gridRes.y * worldcell_size;
+		m_gridSize.z = m_gridRes.z * worldcell_size;
 		// cellPos = worldPos .* gridDelta
 		m_gridDelta = m_gridRes;//
 		m_gridDelta = m_gridDelta / m_gridSize;
 		m_gridData.clear();
-		m_cellSize = cell_size;
+		m_cellSize = worldcell_size;
 		//m_gridData = std::unordered_map<int, int>(-1);
 	}
 	int GridContainer::getGridCellIndex(float px, float py, float pz)
@@ -27,6 +28,7 @@ namespace SPH{
 	}
 
 	void GridContainer::insertParticles(PointBuffer& buf){
+		m_gridData.clear();
 		for (unsigned int i = 0; i < buf.size(); i++){
 			Point& p = buf[i];
 			int cidx = getGridCellIndex(p.position);
