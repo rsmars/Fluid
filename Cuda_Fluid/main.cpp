@@ -10,7 +10,7 @@ SPH::FluidSystem fs;
 SPH::float4 wall_min = { -25, -25, -25 };
 SPH::float4 wall_max = { 25, 25, 25 };
 SPH::float4 fluid_min = { -15, 0, -15 };
-SPH::float4 fluid_max = { 15, 25, 15 };
+SPH::float4 fluid_max = { 15, 20, 15 };
 SPH::float4 gravity = { 0.0, -9.8f, 0 };
 //param
 const int maxPoints = 10000;
@@ -99,8 +99,7 @@ void glIdle(void){
 		fs.tick();
 		glutPostRedisplay();
 		start = clock();
-		float cost = 1.0*(start - stop) / CLOCKS_PER_SEC;
-		cout << cost << "s;\t (" << 1.0 / cost << "fps);\t With "<< fs.getPointCounts() <<" particles" << endl;
+		fs.printPerformance();
 	}
 	
 	/*angleXY.x = (angleXY.x + 1);

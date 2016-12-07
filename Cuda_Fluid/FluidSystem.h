@@ -3,6 +3,7 @@
 #include "FluidPoint.h"
 #include "GridContainer.h"
 #include "NeighborTable.h"
+#include "time.h"
 namespace SPH{
 
 	class FluidSystem
@@ -26,14 +27,26 @@ namespace SPH{
 		/** Get Fluid Point Buffer */
 		virtual const Point* getPointBuf(void) const { return (const Point*)&m_pointBuffer[0]; }
 		/** 逻辑帧 */
+		int cnt = 0;
 		virtual void tick(void){
+			clock_t  start = 0, stop;
+			start = clock();
 			m_gridContainer.insertParticles(m_pointBuffer);
-			//_resetNeighbor();
+			//_resetNeighbor();		
 			_computePressure();
 			_computeForce();
 			_advance();
+			stop = clock();
+			frameCost = 1.0f*(stop - start) / CLOCKS_PER_SEC;
 		}
-
+		void printPerformance(){
+			printf("--------%d Particles(Frame %d)---------\n", this->getPointCounts(), ++cnt);
+			printf("Time  Cost: %.4fs(%.4f fps)\n", frameCost, 1.f / frameCost);
+			printf("Grid  Cost: %.4fs(%.4f %%)\n", gridCost, 100.f * gridCost / frameCost);
+			printf("Press Cost: %.4fs(%.4f %%)\n", pressCost, 100.f * pressCost / frameCost);
+			printf("Force Cost: %.4fs(%.4f %%)\n", forceCost, 100.f * forceCost / frameCost);
+			printf("Adv   Cost: %.4fs(%.4f %%)\n", advCost, 100.f * advCost / frameCost);
+		}
 	private:
 		/** 初始化系统
 		*/
@@ -82,25 +95,8 @@ namespace SPH{
 		}
 		/** 计算密度、压强 */
 		void _computePressure(void){
-			//const float h2 = m_smoothRadius*m_smoothRadius;
-
-			//for (unsigned int i = 0; i < m_pointBuffer.size(); i++){
-			//	unsigned int neighborCount = m_neighborTable.getNeighborCounts(i);
-			//	Point& pi = m_pointBuffer[i];	
-			//	float wsum = 0;
-			//	for (unsigned int j = 0; j < neighborCount; j++){
-			//		unsigned int jidx;
-			//		float dis;
-			//		m_neighborTable.getNeighborInfo(i, j, jidx, dis);
-			//		float r2 = dis*dis;
-			//		// + m_pointBuffer[jidx].mass*(h2-r2)^3;
-			//		wsum = wsum + m_pointMass*pow((h2 - r2), 3.f);
-			//	}
-
-			//	//m_kernelPoly6 = 315.0f/(64.0f * 3.141592f * h^9);
-			//	pi.density = m_kernelPoly6*wsum;
-			//	pi.pressure = (pi.density - m_restDensity)*m_gasConstantK;
-			//}
+			clock_t  start = 0, stop;
+			start = clock();
 			//h^2
 			float h2 = m_smoothRadius*m_smoothRadius;
 
@@ -154,39 +150,13 @@ namespace SPH{
 				pi.density = m_kernelPoly6*m_pointMass*sum;
 				pi.pressure = (pi.density - m_restDensity)*m_gasConstantK;
 			}
+			stop = clock();
+			pressCost = 1.0f*(stop - start) / CLOCKS_PER_SEC;
 		}
 		/** 计算加速度 */
 		void _computeForce(void){
-			//const float h2 = m_smoothRadius*m_smoothRadius;
-
-			//for (unsigned int i = 0; i < m_pointBuffer.size(); i++){
-			//	Point& pi = m_pointBuffer[i];
-			//	unsigned int neighborCount = m_neighborTable.getNeighborCounts(i);
-			//	//float4 acc;
-			//	float4 press;//_without Kernel Constant
-			//	float4 vis;//_without Kernel Constant
-			//	for (unsigned int j = 0; j < neighborCount; j++){
-			//		unsigned int jidx;
-			//		float dis, &r = dis;
-			//		m_neighborTable.getNeighborInfo(i, j, jidx, dis);
-			//		if (jidx == i) continue;
-			//		Point& pj = m_pointBuffer[jidx];
-			//		//r(i)-r(j)
-			//		float4 ri_rj = (pi.position - pj.position) * m_unitScale;
-			//		//h-r
-			//		float h_r = m_smoothRadius - r;
-			//		//h^2-r^2
-			//		float h2_r2 = h2 - r*r;
-			//		//pressure
-			//		float4 pterm = -ri_rj / r*(pi.pressure + pj.pressure) / (2.f * pi.density*pj.density)*h_r*h_r * m_pointMass;
-			//		press = press + pterm;
-			//		//viscosity
-			//		float4 uj_ui = pj.velocity_eval - pj.velocity_eval;
-			//		float4 vterm = uj_ui / (pi.density*pj.density) * h_r * m_pointMass * m_viscosity;
-			//		vis = vis + vterm;
-			//	}
-			//	pi.acceleration = press + vis;
-			//}
+			clock_t  start = 0, stop;
+			start = clock();
 			float h2 = m_smoothRadius*m_smoothRadius;
 
 			for (unsigned int i = 0; i<m_pointBuffer.size(); i++)
@@ -223,9 +193,13 @@ namespace SPH{
 
 				pi.acceleration = accel_sum;
 			}
+			stop = clock();
+			forceCost = 1.0f*(stop - start) / CLOCKS_PER_SEC;
 		}
 		/** 移动粒子*/
 		void _advance(void){
+			clock_t  start = 0, stop;
+			start = clock();
 			//fixed delta time per frame
 			float deltaTime = 0.003f;
 
@@ -318,6 +292,9 @@ namespace SPH{
 				p.velocity = vnext;
 				p.position = p.position + vnext*deltaTime / m_unitScale;		// p(t+1) = p(t) + v(t+1/2) dt
 			}
+
+			stop = clock();
+			advCost = 1.0f*(stop - start) / CLOCKS_PER_SEC;
 		}
 		/** 创建初始液体块*/
 		void _addFluidVolume(const Box& fluidBox, float spacing){
@@ -357,9 +334,13 @@ namespace SPH{
 		float4 m_gravityDir;
 
 		Box m_sphWallBox;
+
+		//performace Param
+		float frameCost;
+		float gridCost, pressCost, forceCost, advCost;
 	public:
 		FluidSystem(){
-			m_unitScale = 0.004f;			// 尺寸单位
+			m_unitScale = 0.004f*3;			// 尺寸单位
 			m_viscosity = 1.0f;				// 粘度
 			m_restDensity = 1000.f;			// 密度
 			m_pointMass = 0.0004f;			// 粒子质量
