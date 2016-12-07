@@ -15,19 +15,19 @@ namespace SPH{
 		int getNeighborCounts(unsigned int ptIndex) { return m_pointExtraData[ptIndex].neighborCounts; }
 		/** get point neightbor information*/
 		void getNeighborInfo(unsigned int ptIndex, int index, unsigned int& neighborIndex, float& neighborDistance);
-
-	private:
+	public:
+	//private:
 		enum { MAX_NEIGHTBOR_COUNTS = 80, };
 
 		union PointExtraData
 		{
 			struct
 			{
-				unsigned neighborDataOffset : 24;
-				unsigned neighborCounts : 8;
+				unsigned  int neighborDataOffset;
+				unsigned int neighborCounts;
 			};
 
-			unsigned int neighborData;
+			unsigned long long neighborData;
 		};
 
 		PointExtraData* m_pointExtraData;
