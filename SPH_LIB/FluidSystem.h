@@ -4,9 +4,11 @@
 #include "GridContainer.h"
 #include "NeighborTable.h"
 #include "time.h"
+#include "FluidInterFace.h"
+
 namespace SPH{
 
-	class FluidSystem
+	class FluidSystem : public System
 	{
 	public:
 		virtual void init(unsigned int maxPointCounts,
@@ -340,7 +342,7 @@ namespace SPH{
 		float gridCost, pressCost, forceCost, advCost;
 	public:
 		FluidSystem(){
-			m_unitScale = 0.004f*3;			// 尺寸单位
+			m_unitScale = 0.004f*10;			// 尺寸单位
 			m_viscosity = 1.0f;				// 粘度
 			m_restDensity = 1000.f;			// 密度
 			m_pointMass = 0.0004f;			// 粒子质量

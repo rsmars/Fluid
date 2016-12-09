@@ -1,18 +1,9 @@
 #pragma once
 #include"FluidSdx.h"
-
+#include "FluidInterFace.h"
 
 namespace SPH{
-	struct Point{
-		float pressure;
-		float density;
-		float4 velocity;
-		float4 velocity_eval;
-		float4 acceleration;
-		float4 position;
-
-		int pnext;
-	};
+	
 	class PointBuffer{
 	public:
 		const int MAX_COUNT;

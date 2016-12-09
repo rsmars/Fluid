@@ -1,11 +1,12 @@
 #include <iostream>
 #include <unordered_map>
+#include <algorithm>
 #include "glut.h"
-#include "FluidSystem.h"
+#include "FluidInterface.h"
 #include "time.h"
 using namespace std;
 using float4 = SPH::float4;
-SPH::FluidSystem fs;
+SPH::System& fs = *getSPHSystem();
 
 SPH::float4 wall_min = { -25, -25, -25 };
 SPH::float4 wall_max = { 25, 25, 25 };

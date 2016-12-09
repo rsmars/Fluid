@@ -48,7 +48,7 @@ namespace SPH{
 	}
 	void GridContainer::findCell(const float4& p, float radius, std::unordered_set<int>& res){
 		//int idx = findCell(p);
-		float r = 0;
+		/*float r = 0;
 		while (r < radius + m_cellSize){
 			for (float theta = 0; theta < PI + 1e-5; theta = theta + PI / 4){
 				for (float phi = 0; phi < 2 * PI + 1e-5; phi = phi + PI / 4){
@@ -63,6 +63,25 @@ namespace SPH{
 			}
 			r += m_cellSize;
 		}
-		
+		return;*/
+		// Compute sphere range
+		int sph_min_x = (int)((-radius + p.x - m_gridMinPos.x) * m_gridDelta.x);
+		int sph_min_y = (int)((-radius + p.y - m_gridMinPos.y) * m_gridDelta.y);
+		int sph_min_z = (int)((-radius + p.z - m_gridMinPos.z) * m_gridDelta.z);
+		if (sph_min_x < 0) sph_min_x = 0;
+		if (sph_min_y < 0) sph_min_y = 0;
+		if (sph_min_z < 0) sph_min_z = 0;
+		int gridCell = (sph_min_z*m_gridRes.y + sph_min_y)*m_gridRes.x + sph_min_x;
+		res.insert(gridCell);
+		res.insert(gridCell + 1);
+		res.insert(gridCell + m_gridRes.x);
+		res.insert(gridCell + m_gridRes.x + 1);
+
+		if (sph_min_z + 1 < m_gridRes.z) {
+			res.insert((int)(gridCell + m_gridRes.y*m_gridRes.x));
+			res.insert((int)(gridCell + m_gridRes.y*m_gridRes.x + 1));
+			res.insert((int)(gridCell + m_gridRes.y*m_gridRes.x + m_gridRes.x));
+			res.insert((int)(gridCell + m_gridRes.y*m_gridRes.x + m_gridRes.x + 1));
+		}		
 	}
 }
