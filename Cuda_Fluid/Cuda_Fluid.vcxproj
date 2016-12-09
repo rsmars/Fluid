@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(IncludePath)</IncludePath>
+    <IncludePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;E:\mygit\Cuda_Fluid\SPH_LIB;$(IncludePath)</IncludePath>
     <ReferencePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(ReferencePath)</ReferencePath>
     <LibraryPath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;E:\mygit\Cuda_Fluid\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -84,7 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExecutablePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(IncludePath)</IncludePath>
+    <IncludePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;E:\mygit\Cuda_Fluid\SPH_LIB;$(IncludePath)</IncludePath>
     <ReferencePath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;$(ReferencePath)</ReferencePath>
     <LibraryPath>E:\mygit\Cuda_Fluid\Cuda_Fluid\glut;E:\mygit\Cuda_Fluid\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
