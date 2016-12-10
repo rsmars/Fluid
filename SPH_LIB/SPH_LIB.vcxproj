@@ -25,12 +25,15 @@
     <ClInclude Include="FluidSdx.h" />
     <ClInclude Include="FluidSystem.h" />
     <ClInclude Include="GridContainer.h" />
+    <ClInclude Include="GridInterFluidSystem.h" />
     <ClInclude Include="NeighborTable.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FluidInterFace.cpp" />
     <ClCompile Include="FluidPoint.cpp" />
     <ClCompile Include="FluidSystem.cpp" />
     <ClCompile Include="GridContainer.cpp" />
+    <ClCompile Include="GridInterFluidSystem.cpp" />
     <ClCompile Include="NeighborTable.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
