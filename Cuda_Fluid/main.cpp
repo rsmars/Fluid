@@ -7,17 +7,18 @@
 using namespace std;
 using float4 = SPH::float4;
 SPH::System& fs = *getSPHSystem();
+//SPH::System* fs2 = getGridInterSPHSystem();
 
-SPH::float4 wall_min = { -25, -25, -25 };
-SPH::float4 wall_max = { 25, 25, 25 };
-SPH::float4 fluid_min = { -15, 0, -15 };
-SPH::float4 fluid_max = { 15, 20, 15 };
+SPH::float4 wall_min = { -55, -55, -55 };
+SPH::float4 wall_max = { 55, 55, 55 };
+SPH::float4 fluid_min = { -35, 10, -35 };
+SPH::float4 fluid_max = { 35, 45, 35 };
 SPH::float4 gravity = { 0.0, -9.8f, 0 };
 //param
 const int maxPoints = 10000;
 float m_distance;
 float4 m_angleXY;
-static float dis = 100;
+static float dis = 200;
 static int px = -1, py = -1;
 static int mouse_btn = 0;
 
@@ -49,6 +50,14 @@ int InitGL(GLvoid){
 	glDepthFunc(GL_LEQUAL);// 所作深度测试的类型  
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);// 告诉系统对透视进行修正  
 	return true;
+}
+float4 UniformSampleSphere(float u1, float u2){
+	float z = 1.f - 2.f * u1;
+	float r = sqrt(max(0.f, 1.f - z*z));
+	float phi = 2.f * 3.1415926 * u2;
+	float x = r * cosf(phi);
+	float y = r * sinf(phi);
+	return float4(x, y, z);
 }
 void glDisplay(void){
 	//fr.display();
@@ -83,10 +92,16 @@ void glDisplay(void){
 
 	glColor3f(1, 0, 0);
 	glBegin(GL_POINTS);
-	for (unsigned int i = 0; i < fs.getPointCounts(); i++){
+	/*for (unsigned int i = 0; i < fs.getPointCounts(); i++){
 		const SPH::Point& p = fs.getPointBuf()[i];
 		glVertex3f(p.position.x, p.position.y, p.position.z);
-	}
+	}*/
+	for (float u1 = 0; u1 <= 1; u1 += 0.02)
+		for (float u2 = 0; u2 <= 1; u2 += 0.02){
+			auto vec = UniformSampleSphere(u1, u2);
+			vec = vec * 55;
+			glVertex3f(vec.x, vec.y, vec.z);
+		}
 	glEnd();
 	glPopMatrix();
 	glutSwapBuffers();
@@ -115,7 +130,16 @@ void mouse(int button, int state, int x, int y){
 		px = x;
 		py = y;
 		mouse_btn = button;
-
+	}
+	else if (state == GLUT_UP && button == 3){
+		dis *= 0.85f;
+		setCamera(dis, m_angleXY);
+		glutPostRedisplay();
+	}
+	else if (state == GLUT_UP && button == 4){
+		dis /= 0.85f;
+		setCamera(dis, m_angleXY);
+		glutPostRedisplay();
 	}
 }
 void motion(int x, int y){
@@ -125,7 +149,7 @@ void motion(int x, int y){
 		m_angleXY.x = (m_angleXY.x - 0.1f*(py - y));
 		break;
 	case GLUT_RIGHT_BUTTON:
-		dis -= 0.01f*(py - y);
+		dis -= 0.1f*(py - y);
 		break;
 	default:
 		break;
@@ -142,14 +166,13 @@ int main(int argc, char *argv[]){
 	glutInitWindowSize(400, 400);
 	glutCreateWindow("OpenGL程序渲染展示");
 	glutDisplayFunc(glDisplay);
-	glutIdleFunc(glIdle);
+	//glutIdleFunc(glIdle);
 	glutReshapeFunc(ReSizeGLScene);
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 
 	InitGL();
 	fs.init(maxPoints, wall_min, wall_max, fluid_min, fluid_max, gravity);
-	fs.tick();
 	glutMainLoop();
 	return 0;
 }
