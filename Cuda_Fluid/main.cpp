@@ -92,16 +92,16 @@ void glDisplay(void){
 
 	glColor3f(1, 0, 0);
 	glBegin(GL_POINTS);
-	/*for (unsigned int i = 0; i < fs.getPointCounts(); i++){
+	for (unsigned int i = 0; i < fs.getPointCounts(); i++){
 		const SPH::Point& p = fs.getPointBuf()[i];
 		glVertex3f(p.position.x, p.position.y, p.position.z);
-	}*/
-	for (float u1 = 0; u1 <= 1; u1 += 0.02)
+	}
+	/*for (float u1 = 0; u1 <= 1; u1 += 0.02)
 		for (float u2 = 0; u2 <= 1; u2 += 0.02){
 			auto vec = UniformSampleSphere(u1, u2);
 			vec = vec * 55;
 			glVertex3f(vec.x, vec.y, vec.z);
-		}
+		}*/
 	glEnd();
 	glPopMatrix();
 	glutSwapBuffers();
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]){
 	glutInitWindowSize(400, 400);
 	glutCreateWindow("OpenGL³ÌÐòäÖÈ¾Õ¹Ê¾");
 	glutDisplayFunc(glDisplay);
-	//glutIdleFunc(glIdle);
+	glutIdleFunc(glIdle);
 	glutReshapeFunc(ReSizeGLScene);
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
