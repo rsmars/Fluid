@@ -35,5 +35,5 @@ extern "C"
 	/** Get the sigleton SPH System point
 	*/
 	__declspec(dllexport) SPH::System* getSPHSystem(void);
-
+	__declspec(dllexport) SPH::System* getGridInterSPHSystem(void);
 };
