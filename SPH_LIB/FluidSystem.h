@@ -33,6 +33,7 @@ namespace SPH{
 		virtual void tick(void){
 			clock_t  start = 0, stop;
 			start = clock();
+			
 			m_gridContainer.insertParticles(m_pointBuffer);
 			//_resetNeighbor();		
 			_computePressure();
@@ -49,13 +50,13 @@ namespace SPH{
 			printf("Force Cost: %.4fs(%.4f %%)\n", forceCost, 100.f * forceCost / frameCost);
 			printf("Adv   Cost: %.4fs(%.4f %%)\n", advCost, 100.f * advCost / frameCost);
 		}
-	private:
+	protected:
 		/** 初始化系统
 		*/
 		void _init(unsigned int maxPointCounts, const Box& wallBox, const Box& initFluidBox, const float4& gravity);
 		/** 计算相邻关系 */
 		void _resetNeighbor(void);
-		/** 计算密度、压强 */
+		/** 计算领域关系、密度、压强 */
 		void _computePressure(void);
 		/** 计算加速度 */
 		void _computeForce(void);
@@ -76,7 +77,7 @@ namespace SPH{
 			}
 		}
 
-	private:
+	protected:
 		PointBuffer m_pointBuffer;
 		GridContainer m_gridContainer;
 		NeighborTable m_neighborTable;
@@ -105,7 +106,7 @@ namespace SPH{
 		float gridCost, pressCost, forceCost, advCost;
 	public:
 		FluidSystem(){
-			m_unitScale = 0.004f*3;			// 尺寸单位
+			m_unitScale = 0.004f;			// 尺寸单位
 			m_viscosity = 1.0f;				// 粘度
 			m_restDensity = 1000.f;			// 密度
 			m_pointMass = 0.0004f;			// 粒子质量
