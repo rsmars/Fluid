@@ -51,14 +51,6 @@ int InitGL(GLvoid){
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);// 告诉系统对透视进行修正  
 	return true;
 }
-float4 UniformSampleSphere(float u1, float u2){
-	float z = 1.f - 2.f * u1;
-	float r = sqrt(max(0.f, 1.f - z*z));
-	float phi = 2.f * 3.1415926 * u2;
-	float x = r * cosf(phi);
-	float y = r * sinf(phi);
-	return float4(x, y, z);
-}
 void glDisplay(void){
 	//fr.display();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    // 清空屏幕
@@ -92,8 +84,8 @@ void glDisplay(void){
 
 	glColor3f(1, 0, 0);
 	glBegin(GL_POINTS);
-	for (unsigned int i = 0; i < fs.getPointCounts(); i++){
-		const SPH::Point& p = fs.getPointBuf()[i];
+	for (int i = 0; i < getCount(); i++){
+		const SPH::Point& p = *getPoint(i);
 		glVertex3f(p.position.x, p.position.y, p.position.z);
 	}
 	/*for (float u1 = 0; u1 <= 1; u1 += 0.02)
@@ -112,10 +104,11 @@ bool flag = true;
 void glIdle(void){
 	clock_t  stop = clock();
 	if (stop - start > CLOCKS_PER_SEC / 40){
-		fs.tick();
+		//fs.tick();
+		tick();
 		glutPostRedisplay();
 		start = clock();
-		fs.printPerformance();
+		//fs.printPerformance();
 	}
 	
 	/*angleXY.x = (angleXY.x + 1);
@@ -172,7 +165,8 @@ int main(int argc, char *argv[]){
 	glutMotionFunc(motion);
 
 	InitGL();
-	fs.init(maxPoints, wall_min, wall_max, fluid_min, fluid_max, gravity);
+	//fs.init(maxPoints, wall_min, wall_max, fluid_min, fluid_max, gravity);
+	init();
 	glutMainLoop();
 	return 0;
 }

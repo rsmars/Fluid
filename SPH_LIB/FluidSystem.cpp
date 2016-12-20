@@ -113,7 +113,7 @@ namespace SPH{
 		{
 			Point& pi = m_pointBuffer[i];
 
-			float4 accel_sum;
+			float4 accel_sum = 0.f;
 			int neighborCounts = m_neighborTable.getNeighborCounts(i);
 
 			for (int j = 0; j <neighborCounts; j++)

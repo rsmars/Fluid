@@ -11,6 +11,14 @@ namespace SPH
 		float4 position;
 
 		int pnext;
+		Point(){
+			pressure = 0;
+			density = 0;
+			velocity = 0;
+			velocity_eval = 0;
+			acceleration = 0;
+			position = 0;
+		}
 	};
 	class System
 	{
@@ -35,5 +43,10 @@ extern "C"
 	/** Get the sigleton SPH System point
 	*/
 	__declspec(dllexport) SPH::System* getSPHSystem(void);
-	__declspec(dllexport) SPH::System* getGridInterSPHSystem(void);
+	__declspec(dllexport) void tick(void);
+	__declspec(dllexport) void init(void);
+	__declspec(dllexport) const SPH::Point* getPoint(int idx);
+	__declspec(dllexport) int getCount(void);
+
+	//_declspec(dllexport) void mymath(int* a);
 };
