@@ -1,4 +1,5 @@
 #include "FluidPoint.h"
+#include <random>
 namespace SPH{
 	PointBuffer::PointBuffer() ://,
 		MAX_COUNT(MAX_POINT),
@@ -34,5 +35,17 @@ namespace SPH{
 			m_buf = nbuf;
 		}
 		return m_buf[m_point_count++];
+	}
+	void PointBuffer::shuffle(int cnt) {
+		std::random_device rd;
+		std::mt19937_64 g(rd());
+
+		typedef typename std::uniform_int_distribution<int> udistr_int;
+		typedef typename udistr_int::param_type udistr_param;
+
+		udistr_int D;
+		for (int i = m_point_count - 1; i > m_point_count - 1 - cnt; --i) {
+			pbSwap(m_buf[i], m_buf[D(g, udistr_param(0, i))]);
+		}
 	}
 }

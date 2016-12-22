@@ -13,6 +13,12 @@ namespace SPH{
 		Point& operator[](int idx){ return m_buf[idx]; };
 		const Point& operator[](int idx) const { return m_buf[idx]; };
 		Point& addPoint();
+		void pbSwap(Point &a, Point &b) {
+			Point tmp = a;
+			a = b;
+			b = tmp;
+		}
+		void shuffle(int cnt);
 	private://data
 		//point data buffer
 		Point* m_buf;

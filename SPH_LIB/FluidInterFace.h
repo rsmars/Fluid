@@ -19,6 +19,17 @@ namespace SPH
 			acceleration = 0;
 			position = 0;
 		}
+		Point& operator=(const Point &other) {
+			if (this != &other) {
+				this->pressure = other.pressure;
+				this->density = other.density;
+				this->velocity = other.velocity;
+				this->velocity_eval = other.velocity_eval;
+				this->acceleration = other.acceleration;
+				this->position = other.position;
+			}
+			return *this;
+		}
 	};
 	class System
 	{

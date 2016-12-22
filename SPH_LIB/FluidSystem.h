@@ -34,7 +34,9 @@ namespace SPH{
 			clock_t  start = 0, stop;
 			start = clock();
 			
-			m_gridContainer.insertParticles(m_pointBuffer);
+			//m_gridContainer.insertParticles(m_pointBuffer);
+			// 1. pointBuffer random select X%
+			m_gridContainer.insertParticlesRandomSampling(m_pointBuffer, 0.3);
 			//_resetNeighbor();		
 			_computePressure();
 			_computeForce();

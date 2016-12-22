@@ -8,6 +8,7 @@ namespace SPH{
 	public://method
 		void init(const Box& box, float sim_scale, float cell_size, float border);
 		void insertParticles(PointBuffer&);
+		void insertParticlesRandomSampling(PointBuffer&, float);
 		int findCell(const float4& p);
 		void findCell(const float4& p, float r, std::unordered_set<int>& res);
 		int getGridCellIndex(float px, float py, float pz);
