@@ -43,7 +43,7 @@ namespace SPH{
 	void GridContainer::insertParticlesRandomSampling(PointBuffer& buf, float percentage) {
 		assert(percentage > 0 && percentage < 1);
 		m_gridData.clear();
-		unsigned int sampleSize = buf.size()*percentage;
+		unsigned int sampleSize = (unsigned int)(buf.size()*percentage);
 		buf.shuffle(sampleSize);
 		unsigned int bufSize = buf.size();
 		for (unsigned int i = bufSize-1; i > bufSize-1-sampleSize; --i) {
