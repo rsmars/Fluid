@@ -40,8 +40,8 @@ namespace SPH{
 		std::random_device rd;
 		std::mt19937_64 g(rd());
 
-		typedef typename std::uniform_int_distribution<int> udistr_int;
-		typedef typename udistr_int::param_type udistr_param;
+		using udistr_int =  std::uniform_int_distribution<int>;
+		using udistr_param =  udistr_int::param_type;
 
 		udistr_int D;
 		for (int i = m_point_count - 1; i > m_point_count - 1 - cnt; --i) {
