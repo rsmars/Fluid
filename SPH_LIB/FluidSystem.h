@@ -36,7 +36,7 @@ namespace SPH{
 			
 			//m_gridContainer.insertParticles(m_pointBuffer);
 			// 1. pointBuffer random select X%
-			m_gridContainer.insertParticlesRandomSampling(m_pointBuffer, 0.3);
+			m_gridContainer.insertParticlesRandomSampling(m_pointBuffer, 0.3f);
 			//_resetNeighbor();		
 			_computePressure();
 			_computeForce();
