@@ -33,10 +33,13 @@ namespace SPH{
 		virtual void tick(void){
 			clock_t  start = 0, stop;
 			start = clock();
-			
+
+			float percentage = 1.f;
+			unsigned int sampleSize = (unsigned int)(m_pointBuffer.size()*percentage);
+			m_pointBuffer.shuffle(sampleSize);
 			//m_gridContainer.insertParticles(m_pointBuffer);
 			// 1. pointBuffer random select X%
-			m_gridContainer.insertParticlesRandomSampling(m_pointBuffer, 0.3f);
+			m_gridContainer.insertParticlesSampling(m_pointBuffer, sampleSize);
 			//_resetNeighbor();		
 			_computePressure();
 			_computeForce();
